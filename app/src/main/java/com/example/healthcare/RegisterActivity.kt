@@ -20,8 +20,7 @@ class RegisterActivity : AppCompatActivity() {
         var edPassword = findViewById<EditText>(R.id.editTextRegpassword)
         var edcnPassword = findViewById<EditText>(R.id.editTextConPassword)
         var login = findViewById<TextView>(R.id.textView3)
-        val healthcare = "your_healthcare_value"
-        val db = MyDatabaseHelper(this, healthcare, null, 1)
+        val db = MyDatabaseHelper(this)
         var btn1 = findViewById<Button>(R.id.Regbutton)
 
         btn1.setOnClickListener(View.OnClickListener {
@@ -56,7 +55,7 @@ class RegisterActivity : AppCompatActivity() {
                         Toast.makeText(applicationContext, "Data Inserted", Toast.LENGTH_SHORT)
                             .show()
                     }
-                    val intent = Intent(this, LoginActivity::class.java)
+                    val intent = Intent(this, HomeActivity::class.java)
                     startActivity(intent)
                 }
                 else{

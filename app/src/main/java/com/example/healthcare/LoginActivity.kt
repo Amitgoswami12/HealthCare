@@ -2,6 +2,7 @@ package com.example.healthcare
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -9,8 +10,10 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 
 class LoginActivity : AppCompatActivity() {
+    @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
@@ -21,46 +24,55 @@ class LoginActivity : AppCompatActivity() {
 
 
 
-        btn.setOnClickListener(View.OnClickListener {
+        btn.setOnClickListener {
             val usernameText = edUserName.text.toString()
             val passwordText = edPassword.text.toString()
-            val healthcare = "your_healthcare_value"
-            val db = MyDatabaseHelper(this, healthcare, null,1)
+            val db = MyDatabaseHelper(this)
 
-            if (usernameText.length ==0 || passwordText.length ==0 ){
-                Toast.makeText(applicationContext, "Please Fill All The Details",Toast.LENGTH_SHORT).show()
-            }
-            else {
-                val username = "Amit"
-                val password = "Amit@12"
+            if (usernameText.isEmpty() || passwordText.isEmpty()) {
+                Toast.makeText(
+                    applicationContext,
+                    "Please Fill All The Details",
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                val userData = db.getUserData() // Retrieve user data from the database
+                if (userData != null) {
 
-                if (db.login(username , password)==1){
-                    Toast.makeText(applicationContext, "Login Success", Toast.LENGTH_SHORT).show()
-                    // Create or access a SharedPreferences object
-                    val sharedPreferences = getSharedPreferences("shared_prefs", Context.MODE_PRIVATE)
+                    if (userData != null && userData.username == usernameText && userData.password == passwordText) {
 
-                    // Create an editor to modify the SharedPreferences
-                    val editor = sharedPreferences.edit()
+                        Toast.makeText(applicationContext, "Login Success", Toast.LENGTH_SHORT)
+                            .show()
+                        // Create or access a SharedPreferences object
+                        val sharedPreferences =
+                            getSharedPreferences("shared_prefs", Context.MODE_PRIVATE)
 
-                    // Put a String value with the key "username"
-                    val username = "your_username"
-                    editor.putString("username", username)
+                        // Create an editor to modify the SharedPreferences
+                        val editor = sharedPreferences.edit()
 
-                    // Apply the changes to SharedPreferences
-                    editor.apply()
+                        // Put a String value with the key "username"
+                        editor.putString("username", usernameText)
 
-                    tv.setOnClickListener(View.OnClickListener {
-                        val intent = Intent(this, HomeActivity::class.java)
-                        startActivity(intent)
-                    })
+                        // Apply the changes to SharedPreferences
+                        editor.apply()
+
+                        tv.setOnClickListener {
+                            val intent = Intent(this, HomeActivity::class.java)
+                            startActivity(intent)
+                        }
+                    }
+                } else {
+                    Toast.makeText(
+                        applicationContext,
+                        "Invalid username or password",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
-            })
-        tv.setOnClickListener(View.OnClickListener {
-            val intent = Intent(this,RegisterActivity::class.java)
-            startActivity(intent)
-
-        })
-
+            tv.setOnClickListener {
+                val intent = Intent(this, RegisterActivity::class.java)
+                startActivity(intent)
+            }
+        }
     }
 }

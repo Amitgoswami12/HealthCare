@@ -1,11 +1,16 @@
 package com.example.healthcare
 
+import android.annotation.SuppressLint
+import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.os.Build
+import android.service.autofill.UserData
+import androidx.annotation.RequiresApi
 import androidx.core.content.contentValuesOf
 
-class MyDatabaseHelper(context: Context, healthcare: String, nothing: Nothing?, i: Int) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
+class MyDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
     companion object {
         private const val DATABASE_NAME = "my_database.db"
@@ -15,7 +20,7 @@ class MyDatabaseHelper(context: Context, healthcare: String, nothing: Nothing?, 
     override fun onCreate(db: SQLiteDatabase) {
         val createTableQuery = """
             CREATE TABLE IF NOT EXISTS user (
-                username TEXT ,
+                username TEXT,
                 email TEXT,
                 password TEXT
             );
@@ -24,55 +29,40 @@ class MyDatabaseHelper(context: Context, healthcare: String, nothing: Nothing?, 
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-
+        // Handle database schema upgrades here
     }
 
     fun register(username: String, email: String, password: String) {
-        val username = "your_username"
-        val email = "your_email@example.com"
-        val password = "your_password"
+        val values = ContentValues()
+        values.put("username", username)
+        values.put("email", email)
+        values.put("password", password)
 
-        val values = contentValuesOf()
-        values.put(
-            "username", username
-        ) // Replace "username_column" with the actual column name in your table
-        values.put(
-            "email", email
-        )       // Replace "email_column" with the actual column name in your table
-        values.put(
-            "password", password
-        ) // Replace "password_column" with the actual column name in your table
-
-
-        val db = this.writableDatabase
+        val db = writableDatabase
         db.insert("user", null, values)
         db.close()
-
     }
 
-    fun login(username: String, password: String): Int {
-        var result = 0
-
-        val str = Array(2) { "" }
-
-        str[0] = username
-        str[1] = password
-
-        val db = readableDatabase
-        val query = "SELECT * FROM user WHERE username = ? AND password = ?"
-        val cursor = db.rawQuery(query, arrayOf(username, password))
-
-        if (cursor.moveToFirst()) {
 
 
-            result = 1
-        } else {
-            // No matching user found
-            result = 0
+        @RequiresApi(Build.VERSION_CODES.P)
+        @SuppressLint("Range")
+        fun getUserData(): UserData? {
+            val db = this.readableDatabase
+            val query = "SELECT username, password FROM user WHERE your_condition_here"
+            val cursor = db.rawQuery(query, null)
+
+            return if (cursor.moveToFirst()) {
+                val username = cursor.getString(cursor.getColumnIndex("username"))
+                val password = cursor.getString(cursor.getColumnIndex("password"))
+                UserData(username,password)
+            } else {
+                null // Return null if no data is found
+            }
         }
-
-        cursor.close()
-        return result
-    }
+    data class UserData(val username: String, val password: String)
 
 }
+
+
+
