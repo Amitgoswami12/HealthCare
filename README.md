@@ -1,5 +1,12 @@
 # HealthCare
 
+Description:
+HealthCare+ is a cutting-edge mobile application designed to revolutionize the healthcare industry. This open-source project aims to provide a user-friendly platform that connects patients, healthcare providers, and medical institutions, making healthcare more accessible and efficient.
+
+It have the Login and Registeration page and Home page in which the several functionalities and different Card are present in which different information is stored.
+
+
+
 
 ![WhatsApp Image 2023-10-31 at 12 25 02 AM (1)](https://github.com/Amitgoswami12/HealthCare/assets/98880561/89a656a6-a3a8-47e5-8284-240812f3c923)
 
